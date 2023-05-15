@@ -71,7 +71,6 @@ fn process(app: &mut App) {
     }
     if let Some((x, y)) = game::ai_move(&app.game) {
         app.game.play(x, y);
-        return;
     }
 }
 

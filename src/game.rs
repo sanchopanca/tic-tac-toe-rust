@@ -18,7 +18,7 @@ pub enum BoardSpace {
     Empty,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Game {
     board: [[BoardSpace; 3]; 3],
     turn: Player,
