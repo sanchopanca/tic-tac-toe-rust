@@ -87,6 +87,7 @@ enum UIPhase {
 struct App {
     game: Game,
     ui_phase: UIPhase,
+    human_player: Player,
 }
 
 impl Game {
@@ -242,6 +243,7 @@ async fn main() {
     let mut app = App {
         game: Game::new(),
         ui_phase: UIPhase::NewGame,
+        human_player: Player::O,
     };
     loop {
         process(&mut app);
@@ -259,14 +261,15 @@ fn process(app: &mut App) {
         app.ui_phase = UIPhase::GameOver(app.game.state);
         return;
     }
-    if app.game.turn == Player::O {
-        if let Some((x, y)) = ai_move(&app.game) {
+    if app.game.turn == app.human_player {
+        if let Some((x, y)) = get_input() {
             app.game.play(x, y);
-            return;
         }
+        return;
     }
-    if let Some((x, y)) = get_input() {
+    if let Some((x, y)) = ai_move(&app.game) {
         app.game.play(x, y);
+        return;
     }
 }
 
@@ -291,7 +294,12 @@ fn draw_ui(app: &mut App) {
         UIPhase::NewGame => {
             root_ui().window(1, Vec2::new(1., 1.), Vec2::new(100., 100.), |ui| {
                 ui.label(None, "New Game");
-                if ui.button(None, "Start") {
+                if ui.button(None, "Play as X") {
+                    app.human_player = Player::X;
+                    app.ui_phase = UIPhase::Playing;
+                }
+                if ui.button(None, "Play as O") {
+                    app.human_player = Player::O;
                     app.ui_phase = UIPhase::Playing;
                 }
             });
