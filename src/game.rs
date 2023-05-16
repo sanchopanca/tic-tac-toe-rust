@@ -158,12 +158,12 @@ pub fn ai_move(game: &Game) -> Option<(usize, usize)> {
     if game.state != GameState::Playing {
         None
     } else {
-        let ((x, y), _) = minimax(game);
+        let ((x, y), _) = minimax(game, -10, 10);
         Some((x, y))
     }
 }
 
-pub fn minimax(game: &Game) -> ((usize, usize), i32) {
+fn minimax(game: &Game, mut alpha: i32, mut beta: i32) -> ((usize, usize), i32) {
     if game.state != GameState::Playing {
         return ((0, 0), evaluate_position(game));
     }
@@ -176,10 +176,14 @@ pub fn minimax(game: &Game) -> ((usize, usize), i32) {
             for (x, y) in game.empty_spaces() {
                 let mut clonned_game = game.clone();
                 clonned_game.play(x, y);
-                let (_, score) = minimax(&clonned_game);
+                let (_, score) = minimax(&clonned_game, alpha, beta);
                 if score > best_score {
                     best_score = score;
                     best_move = (x, y);
+                }
+                alpha = alpha.max(score);
+                if beta <= alpha {
+                    break;
                 }
             }
         }
@@ -188,10 +192,14 @@ pub fn minimax(game: &Game) -> ((usize, usize), i32) {
             for (x, y) in game.empty_spaces() {
                 let mut clonned_game = game.clone();
                 clonned_game.play(x, y);
-                let (_, score) = minimax(&clonned_game);
+                let (_, score) = minimax(&clonned_game, alpha, beta);
                 if score < best_score {
                     best_score = score;
                     best_move = (x, y);
+                }
+                beta = beta.min(score);
+                if beta <= alpha {
+                    break;
                 }
             }
         }
@@ -228,7 +236,7 @@ mod tests {
             state: GameState::Playing,
             turn: X,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 0);
 
         // x win
@@ -242,7 +250,7 @@ mod tests {
             state: GameState::Playing,
             turn: X,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 1);
     }
 
@@ -259,7 +267,7 @@ mod tests {
             state: GameState::Playing,
             turn: O,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 1);
 
         // tie
@@ -273,7 +281,7 @@ mod tests {
             state: GameState::Playing,
             turn: O,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 0);
 
         // o win
@@ -287,7 +295,7 @@ mod tests {
             state: GameState::Playing,
             turn: O,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, -1);
     }
 
@@ -304,7 +312,7 @@ mod tests {
             state: GameState::Playing,
             turn: X,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 1);
 
         // tie
@@ -318,7 +326,7 @@ mod tests {
             state: GameState::Playing,
             turn: X,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 0);
 
         // o win
@@ -332,7 +340,7 @@ mod tests {
             state: GameState::Playing,
             turn: X,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, -1);
     }
 
@@ -349,7 +357,7 @@ mod tests {
             state: GameState::Playing,
             turn: X,
         };
-        let (_, score) = minimax(&game);
+        let (_, score) = minimax(&game, -10, 10);
         assert_eq!(score, 0);
     }
 
