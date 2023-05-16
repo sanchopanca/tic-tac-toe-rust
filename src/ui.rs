@@ -18,30 +18,45 @@ pub fn draw(app: &App) {
 }
 
 pub fn draw_ui(app: &mut App) {
+    let golden_ratio = 1.618;
+    let popup_size = Vec2::new(
+        screen_width() / golden_ratio,
+        screen_height() / golden_ratio / golden_ratio,
+    );
+    let popup_position = Vec2::new(
+        (screen_width() - popup_size.x) / 2.0,
+        (screen_height() - popup_size.y) / 2.0,
+    );
+
+    let title_position = Vec2::new(popup_size.x / 2.0 - 15.0, 0.0);
+    let text_position = Vec2::new(popup_size.x / 2.0, 50.0);
+    let single_button_position = Vec2::new(popup_size.x / 2.0 - 15.0, 100.0);
+    let left_button_position = Vec2::new(popup_size.x / 2.0 - 100.0, 100.0);
+    let right_button_position = Vec2::new(popup_size.x / 2.0 + 100.0 - 30.0, 100.0);
     match &app.ui_phase.clone() {
         UIPhase::NewGame => {
-            root_ui().window(1, Vec2::new(1., 1.), Vec2::new(100., 100.), |ui| {
-                ui.label(None, "New Game");
-                if ui.button(None, "Play as X") {
+            root_ui().window(1, popup_position, popup_size, |ui| {
+                ui.label(title_position, "New Game");
+                if ui.button(left_button_position, "Play as X") {
                     app.human_player = Player::X;
                     app.ui_phase = UIPhase::Playing;
                 }
-                if ui.button(None, "Play as O") {
+                if ui.button(right_button_position, "Play as O") {
                     app.human_player = Player::O;
                     app.ui_phase = UIPhase::Playing;
                 }
             });
         }
         UIPhase::GameOver(state) => {
-            root_ui().window(1, Vec2::new(1., 1.), Vec2::new(100., 100.), |ui| {
-                ui.label(None, "Game Over");
+            root_ui().window(1, popup_position, popup_size, |ui| {
+                ui.label(title_position, "Game Over");
                 match state {
-                    GameState::XWon => ui.label(None, "X won"),
-                    GameState::OWon => ui.label(None, "O won"),
-                    GameState::Tie => ui.label(None, "Tie"),
+                    GameState::XWon => ui.label(text_position, "X won"),
+                    GameState::OWon => ui.label(text_position, "O won"),
+                    GameState::Tie => ui.label(text_position, "Tie"),
                     _ => (),
                 }
-                if ui.button(None, "New Game") {
+                if ui.button(single_button_position, "New Game") {
                     app.ui_phase = UIPhase::NewGame;
                     app.game = Game::new();
                 }
