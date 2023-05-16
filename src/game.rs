@@ -1,3 +1,5 @@
+use rand::seq::SliceRandom;
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum Player {
     X,
@@ -170,10 +172,12 @@ fn minimax(game: &Game, mut alpha: i32, mut beta: i32) -> ((usize, usize), i32) 
 
     let mut best_move = (0, 0);
     let mut best_score;
+    let mut empty_spaces = game.empty_spaces().collect::<Vec<_>>();
+    empty_spaces.shuffle(&mut rand::thread_rng());
     match game.turn {
         Player::X => {
             best_score = -10;
-            for (x, y) in game.empty_spaces() {
+            for (x, y) in empty_spaces {
                 let mut clonned_game = game.clone();
                 clonned_game.play(x, y);
                 let (_, score) = minimax(&clonned_game, alpha, beta);
@@ -189,7 +193,7 @@ fn minimax(game: &Game, mut alpha: i32, mut beta: i32) -> ((usize, usize), i32) 
         }
         Player::O => {
             best_score = 10;
-            for (x, y) in game.empty_spaces() {
+            for (x, y) in empty_spaces {
                 let mut clonned_game = game.clone();
                 clonned_game.play(x, y);
                 let (_, score) = minimax(&clonned_game, alpha, beta);
