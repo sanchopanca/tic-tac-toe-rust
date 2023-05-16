@@ -54,19 +54,21 @@ pub fn draw_ui(app: &mut App) {
 fn draw_bars() {
     for i in 1..3 {
         // horizontal lines
-        draw_rectangle(
+        draw_line(
             0.0,
             i as f32 * screen_height() / 3.0,
             screen_width(),
+            i as f32 * screen_height() / 3.0,
             10.0,
             BARS_COLOR,
         );
         // vertical lines
-        draw_rectangle(
+        draw_line(
             i as f32 * screen_width() / 3.0,
             0.0,
-            10.0,
+            i as f32 * screen_width() / 3.0,
             screen_height(),
+            10.0,
             BARS_COLOR,
         );
     }
@@ -76,53 +78,57 @@ fn draw_board(game: &Game) {
     for i in 0..3 {
         for j in 0..3 {
             match game.get_board()[i][j] {
-                BoardSpace::Occupied(Player::X) => draw_x(
-                    i as f32 * screen_width() / 3.0,
-                    j as f32 * screen_height() / 3.0,
-                ),
-                BoardSpace::Occupied(Player::O) => draw_o(
-                    i as f32 * screen_width() / 3.0,
-                    j as f32 * screen_height() / 3.0,
-                ),
+                BoardSpace::Occupied(Player::X) => draw_x(i, j),
+                BoardSpace::Occupied(Player::O) => draw_o(i, j),
                 BoardSpace::Empty => (),
             }
         }
     }
 }
 
-fn draw_x(x: f32, y: f32) {
+const PADDING: f32 = 30.0;
+const THICKNESS: f32 = 25.0;
+
+fn draw_x(x: usize, y: usize) {
+    let top_left_x = x as f32 * screen_width() / 3.0;
+    let top_left_y = y as f32 * screen_height() / 3.0;
+    let padding = PADDING + THICKNESS / (2.0 * 2.0_f32.sqrt());
     draw_line(
-        x,
-        y,
-        x + screen_width() / 3.0,
-        y + screen_height() / 3.0,
-        15.0,
+        top_left_x + padding,
+        top_left_y + padding,
+        top_left_x + screen_width() / 3.0 - padding,
+        top_left_y + screen_height() / 3.0 - padding,
+        THICKNESS,
         MARKS_COLOR,
     );
     draw_line(
-        x + screen_width() / 3.0,
-        y,
-        x,
-        y + screen_height() / 3.0,
-        15.0,
+        top_left_x + screen_width() / 3.0 - padding,
+        top_left_y + padding,
+        top_left_x + padding,
+        top_left_y + screen_height() / 3.0 - padding,
+        THICKNESS,
         MARKS_COLOR,
     );
 }
 
-fn draw_o(x: f32, y: f32) {
+fn draw_o(x: usize, y: usize) {
+    let top_left_x = x as f32 * screen_width() / 3.0;
+    let top_left_y = y as f32 * screen_height() / 3.0;
+    let half_space_width = screen_width() / 6.0;
+    let half_space_height = screen_height() / 6.0;
     draw_poly(
-        x + screen_width() / 6.0,
-        y + screen_height() / 6.0,
+        top_left_x + half_space_width,
+        top_left_y + half_space_height,
         40,
-        screen_width() / 6.0,
+        half_space_width - PADDING,
         0.0,
         MARKS_COLOR,
     );
     draw_poly(
-        x + screen_width() / 6.0,
-        y + screen_height() / 6.0,
+        top_left_x + half_space_width,
+        top_left_y + half_space_height,
         40,
-        screen_width() / 6.0 - 10.0,
+        half_space_width - PADDING - THICKNESS,
         0.0,
         BACKGROUND_COLOR,
     );
