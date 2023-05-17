@@ -45,6 +45,7 @@ pub fn draw_ui(app: &mut App) {
                     app.human_player = Player::O;
                     app.ui_phase = UIPhase::Playing;
                 }
+                super::init_random();
             });
         }
         UIPhase::GameOver(state) => {

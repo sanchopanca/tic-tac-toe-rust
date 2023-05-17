@@ -1,4 +1,5 @@
 mod game;
+mod random;
 mod ui;
 use game::{GameState, Player};
 use macroquad::prelude::*;
@@ -21,17 +22,27 @@ pub struct App {
 
 #[macroquad::main(conf)]
 async fn main() {
-    let mut app = App {
-        game: game::Game::new(),
-        ui_phase: UIPhase::NewGame,
-        human_player: Player::O,
-    };
+    let mut app = create_app();
     loop {
         process(&mut app);
         draw(&app);
         draw_ui(&mut app);
         next_frame().await
     }
+}
+
+fn create_app() -> App {
+    init_random();
+    App {
+        game: game::Game::new(),
+        ui_phase: UIPhase::NewGame,
+        human_player: Player::O,
+    }
+}
+
+fn init_random() {
+    let time = get_time() * 10_000_000.0;
+    quad_rand::srand(time as u64);
 }
 
 fn process(app: &mut App) {

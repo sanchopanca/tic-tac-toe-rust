@@ -1,4 +1,5 @@
-use rand::seq::SliceRandom;
+// use rand::seq::SliceRandom;
+use crate::random::Shuffle;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Player {
@@ -173,7 +174,7 @@ fn minimax(game: &Game, mut alpha: i32, mut beta: i32) -> ((usize, usize), i32) 
     let mut best_move = (0, 0);
     let mut best_score;
     let mut empty_spaces = game.empty_spaces().collect::<Vec<_>>();
-    empty_spaces.shuffle(&mut rand::thread_rng());
+    empty_spaces.shuffle();
     match game.turn {
         Player::X => {
             best_score = -10;
