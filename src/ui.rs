@@ -4,6 +4,8 @@ use crate::App;
 use colors::*;
 use macroquad::{prelude::*, ui::root_ui};
 
+const GOLDEN_RATIO: f32 = 1.618;
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum UIPhase {
     NewGame,
@@ -18,10 +20,9 @@ pub fn draw(app: &App) {
 }
 
 pub fn draw_ui(app: &mut App) {
-    let golden_ratio = 1.618;
     let popup_size = Vec2::new(
-        screen_width() / golden_ratio,
-        screen_height() / golden_ratio / golden_ratio,
+        screen_width() / GOLDEN_RATIO,
+        screen_height() / GOLDEN_RATIO / GOLDEN_RATIO,
     );
     let popup_position = Vec2::new(
         (screen_width() - popup_size.x) / 2.0,
@@ -102,19 +103,26 @@ fn draw_board(game: &Game) {
     }
 }
 
-const PADDING: f32 = 30.0;
-const THICKNESS: f32 = 25.0;
+fn padding() -> f32 {
+    let size = screen_width() / 3.0;
+    size / GOLDEN_RATIO / 4.0
+}
+
+fn thikness() -> f32 {
+    let size = screen_width() / 3.0;
+    size / GOLDEN_RATIO / 4.0
+}
 
 fn draw_x(x: usize, y: usize) {
     let top_left_x = x as f32 * screen_width() / 3.0;
     let top_left_y = y as f32 * screen_height() / 3.0;
-    let padding = PADDING + THICKNESS / (2.0 * 2.0_f32.sqrt());
+    let padding = padding() + thikness() / (2.0 * 2.0_f32.sqrt());
     draw_line(
         top_left_x + padding,
         top_left_y + padding,
         top_left_x + screen_width() / 3.0 - padding,
         top_left_y + screen_height() / 3.0 - padding,
-        THICKNESS,
+        thikness(),
         MARKS_COLOR,
     );
     draw_line(
@@ -122,7 +130,7 @@ fn draw_x(x: usize, y: usize) {
         top_left_y + padding,
         top_left_x + padding,
         top_left_y + screen_height() / 3.0 - padding,
-        THICKNESS,
+        thikness(),
         MARKS_COLOR,
     );
 }
@@ -136,7 +144,7 @@ fn draw_o(x: usize, y: usize) {
         top_left_x + half_space_width,
         top_left_y + half_space_height,
         40,
-        half_space_width - PADDING,
+        half_space_width - padding(),
         0.0,
         MARKS_COLOR,
     );
@@ -144,7 +152,7 @@ fn draw_o(x: usize, y: usize) {
         top_left_x + half_space_width,
         top_left_y + half_space_height,
         40,
-        half_space_width - PADDING - THICKNESS,
+        half_space_width - padding() - thikness(),
         0.0,
         BACKGROUND_COLOR,
     );
